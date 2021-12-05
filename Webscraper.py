@@ -71,3 +71,5 @@ print(final_list)
 judgements_df = pandas.DataFrame(final_list, columns=['Link','Tenor','Tatbestand'])
 print(judgements_df)
 structured_data.clear()
+judgement_testing = judgements_df
+
