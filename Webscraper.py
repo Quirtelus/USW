@@ -62,14 +62,13 @@ for link in links:
             #assign structured data to different datasets
             tenor = structured_data[0]
             tatbestand = structured_data[1]
-            final_list.append([link,tenor,tatbestand])
+            gruende = structured_data[2]
+            final_list.append([link,tenor,tatbestand,gruende])
             print(link)
             print(final_list[0])
     except:
         	print('No findings.')
 print(final_list)
-judgements_df = pandas.DataFrame(final_list, columns=['Link','Tenor','Tatbestand'])
+judgements_df = pandas.DataFrame(final_list, columns=['Link','Tenor','Tatbestand','Gruende'])
 print(judgements_df)
 structured_data.clear()
-judgement_testing = judgements_df
-
