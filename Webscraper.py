@@ -11,6 +11,7 @@ import time
 import pandas
 import requests
 from bs4 import BeautifulSoup
+from sklearn.feature_extraction.text import CountVectorizer
 #create list in steps by 10 to adjust the url
 numbers_list = list()
 all_judgements = list()
@@ -22,7 +23,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 d = webdriver.Chrome(ChromeDriverManager().install())
 links = list()
 #access all pages containing weblinks to the judgements
-for x in numbers_list[0:10]:
+for x in numbers_list[0:2]:
 	
     elements = []
     url = 'https://openjur.de/suche/Flüchtlingseigenschaft/-fg-og-sg-vf/' + str(x) + '.vd-desc.html'
@@ -76,17 +77,24 @@ print(judgements_df)
 structured_data.clear()
 judgements_2=judgements_df.copy()
 
-
+#Create a list of every tenor as string
 strList=list()
 for tenor in judgements_2['Tenor']:
     tenor = ''.join(tenor)
     strList.append(tenor)
     
-iterator = 0
-while iterator < len(strList):
-    judgements_2.iloc[iterator]['Tenor']=strList[iterator]
-    iterator += 1
+#overwrite the tenor list with the tenor strings
+judgements_2["Tenor"]=strList
 
 
+#check if abgewiesen in Tenor = 0 else 1
+judgements_2["abgewiesen"]=0    
+intList=list()
+for tenor in judgements_2['Tenor']:
+     if "abgewiesen" in tenor:
+       intList.append(0)
+     else:
+       intList.append(1)
+#hinzufügen der werte ob abgewiesen in Abgewiesen
+judgements_2["Abgewiesen"]=intList
 
-    
