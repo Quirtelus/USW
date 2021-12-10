@@ -7,6 +7,7 @@ Created on Mon Nov 22 11:05:27 2021
 # this is a data science project
 @author: leon
 """
+import time
 import pandas
 import requests
 from bs4 import BeautifulSoup
@@ -21,7 +22,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 d = webdriver.Chrome(ChromeDriverManager().install())
 links = list()
 #access all pages containing weblinks to the judgements
-for x in numbers_list[0:2]:
+for x in numbers_list[0:10]:
 	
     elements = []
     url = 'https://openjur.de/suche/Flüchtlingseigenschaft/-fg-og-sg-vf/' + str(x) + '.vd-desc.html'
@@ -42,6 +43,7 @@ for link in links:
     #soup = BeautifulSoup(page, 'lxml')
     d.get(link)
     soup = BeautifulSoup(d.page_source, "lxml")
+    time.sleep(1) 
     try:
     		#extract only the text part from the websites
             full_content = soup.body.find("div", {'id': "econtent"})
@@ -72,3 +74,19 @@ print(final_list)
 judgements_df = pandas.DataFrame(final_list, columns=['Link','Tenor','Tatbestand','Gruende'])
 print(judgements_df)
 structured_data.clear()
+judgements_2=judgements_df.copy()
+
+
+strList=list()
+for tenor in judgements_2['Tenor']:
+    tenor = ''.join(tenor)
+    strList.append(tenor)
+    
+iterator = 0
+while iterator < len(strList):
+    judgements_2.iloc[iterator]['Tenor']=strList[iterator]
+    iterator += 1
+
+
+
+    
