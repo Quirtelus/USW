@@ -23,7 +23,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 d = webdriver.Chrome(ChromeDriverManager().install())
 links = list()
 #access all pages containing weblinks to the judgements
-for x in numbers_list[0:2]:
+for x in numbers_list[0:10]:
 	
     elements = []
     url = 'https://openjur.de/suche/Flüchtlingseigenschaft/-fg-og-sg-vf/' + str(x) + '.vd-desc.html'
@@ -59,7 +59,7 @@ for link in links:
                     elif tag.name == 'p':
                         temp_data.append(tag.get_text())
                 structured_data.append(temp_data)
-            print(structured_data[0])
+            #print(structured_data[0])
     #except:
         	#print('No findings.')
             #assign structured data to different datasets
@@ -67,8 +67,8 @@ for link in links:
             tatbestand = structured_data[1]
             gruende = structured_data[2]
             final_list.append([link,tenor,tatbestand,gruende])
-            print(link)
-            print(final_list[0])
+            #print(link)
+            #print(final_list[0])
     except:
         	print('No findings.')
 print(final_list)
@@ -88,13 +88,20 @@ judgements_2["Tenor"]=strList
 
 
 #check if abgewiesen in Tenor = 0 else 1
-judgements_2["abgewiesen"]=0    
 intList=list()
 for tenor in judgements_2['Tenor']:
-     if "abgewiesen" in tenor:
-       intList.append(0)
-     else:
+     if "angenommen" in tenor:
        intList.append(1)
+     elif "abgewiesen" in tenor:
+         intList.append(2)
+     elif "zurückgewiesen" in tenor:
+        intList.append(3)
+     elif "zurückgenommen" in tenor:
+        intList.append(4)
+     elif "aufgehoben" in tenor:
+        intList.append(5)
+     else:
+       intList.append(0)
 #hinzufügen der werte ob abgewiesen in Abgewiesen
-judgements_2["Abgewiesen"]=intList
+judgements_2["CheckTwo"]=intList
 
