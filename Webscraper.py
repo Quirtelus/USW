@@ -87,8 +87,7 @@ for tenor in judgements_2['Tenor']:
 judgements_2["Tenor"]=strList
 
 
-#check if abgewiesen in Tenor = 0 else 1
-judgements_2["abgewiesen"]=0    
+#check if abgewiesen in Tenor = 0 else 1 
 intList=list()
 for tenor in judgements_2['Tenor']:
      if "abgewiesen" in tenor:
