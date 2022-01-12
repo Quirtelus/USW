@@ -90,10 +90,73 @@ judgements_2["Tenor"]=strList
 #check if abgewiesen in Tenor = 0 else 1 
 intList=list()
 for tenor in judgements_2['Tenor']:
+<<<<<<< Updated upstream
      if "abgewiesen" in tenor:
        intList.append(0)
      else:
        intList.append(1)
 #hinzufügen der werte ob abgewiesen in Abgewiesen
 judgements_2["Abgewiesen"]=intList
+=======
+     if "Die Klage wird abgewiesen" in tenor or "Kläger" and "Berufung" and "abgelehnt" in tenor or "Klägerin" and "Berufung" and "abgelehnt" in tenor:
+       intList.append(1)
+     elif "angenommen" in tenor or "Abschiebungsverbot festzustellen" in tenor or "Abschiebungsverbot" and "festzustellen" in tenor or "subsidiären Schutz zu gewähren" in tenor or "Bescheid des Bundesamtes" and "aufgehoben" in tenor or "Flüchtlingseigenschaft anzuerkennen" in tenor or "Abschiebungsverbot" and "festzustellen" in tenor or "§60 Abs. 5 AufenthG" and "vorliegen" in tenor or "subsidiären Schutz zuzuerkennen" in tenor or "Flüchtlingseigenschaft zuzuerkennen" in tenor:
+       intList.append(2)
+     else:
+       intList.append(0)
+judgements_2['abgewiesen']=intList
+judgements_2.drop(judgements_2[judgements_2['abgewiesen'] == 0].index, inplace = True)
+#hinzufügen der werte ob abgewiesen in Abgewiesen
+judgements_2.reset_index(drop=True, inplace=True)
+>>>>>>> Stashed changes
 
+
+
+strList=list()
+for tatbestand in judgements_2['Tatbestand']:
+    tatbestand = ''.join(tatbestand)
+    strList.append(tatbestand)
+
+judgements_2["Tatbestand"]=strList
+
+# build count vectorizer
+from sklearn.feature_extraction.text import CountVectorizer
+count_vect = CountVectorizer(min_df = 5)
+X = count_vect.fit_transform(judgements_2['Tatbestand'])
+dtm = pandas.DataFrame(X.toarray())
+dtm.columns = count_vect.get_feature_names()
+data_dtm = dtm.copy()
+data_dtm['#Abgewiesen#']=judgements_2["abgewiesen"]
+dtm2 = dtm.copy()
+
+
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_iris
+y=data_dtm['#Abgewiesen#']
+x=data_dtm.drop('#Abgewiesen#',axis=1)
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.2,stratify=y)
+
+
+
+
+# create train and test data
+import random
+sample = random.sample(range(len(data_dtm.index)), k=int(len(data_dtm.index)*0.8))
+training = data_dtm.iloc[sample]
+test = data_dtm.drop(sample)
+
+
+
+# apply random forest classifier
+from sklearn.ensemble import RandomForestClassifier
+forest = RandomForestClassifier()
+forest.fit(x_train, y_train)
+forest.score(x_test,y_test)
+
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# Make predictions for the test set
+y_pred_test = forest.predict(x_test)
+
+# View the classification report for test data and predictions
+print(classification_report(y_test, y_pred_test))
